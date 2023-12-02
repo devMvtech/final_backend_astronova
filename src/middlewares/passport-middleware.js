@@ -20,7 +20,7 @@ passport.use(
       const {
         rows,
       } = await db.query(
-        "SELECT user_id, email FROM users WHERE user_id = $1",
+        "SELECT donator_id, email FROM donators WHERE donator_id = $1",
         [id]
       );
 
@@ -28,9 +28,9 @@ passport.use(
         throw new Error("401 not authorized");
       }
 
-      let user = { id: rows[0].user_id, email: rows[0].email };
+      let donator = { id: rows[0].donator_id, email: rows[0].email };
 
-      return await done(null, user);
+      return await done(null, donator);
     } catch (error) {
       console.log(error.message);
       done(null, false);

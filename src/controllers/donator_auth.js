@@ -4,12 +4,12 @@ const { sign } = require("jsonwebtoken");
 const { SECRET } = require("../constants");
 const path = require("path");
 
-// Get All Users
+// Get All Donators
 
-exports.getUsers = async (req, res) => {
+exports.getDonators = async (req, res) => {
   try {
     const { rows } = await db.query(
-      "select user_id, email, profile_img from users"
+      "select donator_id, name, email, phone, address from donators"
     );
 
     return res.status(200).json({
@@ -24,18 +24,17 @@ exports.getUsers = async (req, res) => {
   }
 };
 
-// User Registration
+// Donator Registration
 
 exports.register = async (req, res) => {
-  const { email, password } = req.body;
-  const profile_img = req.file.path;
+  const { email, password, name, phone, address } = req.body;
 
   try {
     const hashedPassword = await hash(password, 10);
 
     await db.query(
-      `insert into users(email, password, profile_img) values ($1 , $2, $3)`,
-      [email, hashedPassword, profile_img]
+      `insert into donators(email, password, name, phone, address) values ($1 , $2, $3, $4, $5)`,
+      [email, hashedPassword, name, phone, address]
     );
 
     return res.status(201).json({
@@ -53,10 +52,10 @@ exports.register = async (req, res) => {
 // User Login
 
 exports.login = async (req, res) => {
-  let user = req.user;
+  let donator = req.donator;
   let payload = {
-    id: user.user_id,
-    email: user.email,
+    id: donator.donator_id,
+    email: donator.email,
   };
 
   try {

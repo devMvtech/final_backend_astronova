@@ -4,7 +4,7 @@ const { PORT, CLIENT_URL } = require("./constants");
 const cookieParser = require("cookie-parser");
 const passport = require("passport");
 const cors = require("cors");
-const path = require("path");
+// const path = require("path");
 
 // import passport middleware
 require("./middlewares/passport-middleware");
@@ -16,17 +16,19 @@ app.use(cors({ origin: CLIENT_URL, credentials: true }));
 app.use(passport.initialize());
 
 // import routes
-const authRoutes = require("./routes/auth");
+const donatorRoutes = require("./routes/donator_auth");
+const embassadorRoutes = require("./routes/embassador");
 
 // initialize routes
-app.use("/api", authRoutes);
+app.use("/api/donator", donatorRoutes);
+app.use("/api/embassador", embassadorRoutes);
 
 // app start
 const appStart = () => {
   try {
     app.listen(PORT, () => {
-      // SERVER_URL: process.env.SERVER_URL,
-      console.log(`The app is running at http://localhost:${PORT}`);
+      SERVER_URL: process.env.SERVER_URL,
+        console.log(`The app is running at http://localhost:${PORT}`);
     });
   } catch (error) {
     console.log(`Error : ${error.message}`);
