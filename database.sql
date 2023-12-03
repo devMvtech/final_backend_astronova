@@ -1,13 +1,3 @@
--- demo users table
-create table users(
-    user_id serial primary key,
-    email varchar(255) unique not null,
-    password varchar(255) not null,
-    phone varchar(20) unique not null,
-    address varchar(100) not null,
-    created_at date default current_date
-);
-
 -- Donators
 CREATE TABLE donators(
     donator_id serial primary key,

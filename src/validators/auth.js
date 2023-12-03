@@ -1,5 +1,7 @@
 const { check } = require("express-validator");
-const db = require("../db");
+// const db = require("../db");
+const db = require("../../database.js");
+
 const { compare } = require("bcryptjs");
 
 // password
