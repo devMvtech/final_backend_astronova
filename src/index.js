@@ -22,6 +22,9 @@ const embassadorRoutes = require("./routes/embassador");
 // initialize routes
 app.use("/api/donator", donatorRoutes);
 app.use("/api/embassador", embassadorRoutes);
+app.use("/", (req, res) => {
+  console.log("Welcome to astronova");
+});
 
 // app start
 const appStart = () => {
