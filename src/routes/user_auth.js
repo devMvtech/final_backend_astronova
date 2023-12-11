@@ -28,7 +28,7 @@ const router = Router();
 // All Auth routes
 
 router.get("/get-all-user", getAllUser);
-router.get("/get-user", getUser);
+router.get("/get-user/:id", getUser);
 router.post(
   "/register-donor",
   registerValidation,

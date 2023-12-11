@@ -39,13 +39,14 @@ exports.getAllUser = async (req, res) => {
 exports.getUser = async (req, res) => {
   try {
     const { id } = req.params;
-    const User = await db.query(`SELECT * FROM "User" WHERE user_id = $1`, [
-      id,
-    ]);
+    const User = await db.query(
+      `SELECT user_id, email, username, phone, address, role FROM "User" WHERE user_id = $1`,
+      [id]
+    );
 
     return res.status(200).json({
       success: true,
-      user: User,
+      user: User.rows[0],
     });
   } catch (error) {
     console.log(error.message);
