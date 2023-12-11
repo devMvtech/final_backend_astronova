@@ -16,7 +16,7 @@ const email = check("email")
 
 // check if email exists
 const emailExists = check("email").custom(async (value) => {
-  const { rows } = await db.query(`SELECT * from donators WHERE email = $1`, [
+  const { rows } = await db.query(`SELECT * from "User" WHERE email = $1`, [
     value,
   ]);
 
@@ -27,24 +27,19 @@ const emailExists = check("email").custom(async (value) => {
 
 // login validation
 const loginFieldsCheck = check("email").custom(async (value, { req }) => {
-  const donator = await db.query("SELECT * from donators WHERE email = $1", [
-    value,
-  ]);
+  const user = await db.query(`SELECT * from "User" WHERE email = $1`, [value]);
 
-  if (!donator.rows.length) {
+  if (!user.rows.length) {
     throw new Error("Email does not exist.");
   }
 
-  const validPassword = await compare(
-    req.body.password,
-    donator.rows[0].password
-  );
+  const validPassword = await compare(req.body.password, user.rows[0].password);
 
   if (!validPassword) {
     throw new Error("Wrong password");
   }
 
-  req.donator = donator.rows[0];
+  req.user = user.rows[0];
 });
 
 module.exports = {

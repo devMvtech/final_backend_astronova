@@ -1,9 +1,9 @@
 // const db = require("../db");
 const db = require("../../database.js");
 
-// Embassador Registration
+// Ambassador Registration
 
-exports.embassador_register = async (req, res) => {
+exports.ambassador_register = async (req, res) => {
   const {
     email,
     full_name,
@@ -12,10 +12,35 @@ exports.embassador_register = async (req, res) => {
     country,
     nationality,
     description,
-    embassador_type,
+    ambassador_type,
   } = req.body;
 
   try {
+    // Check if the email already exists in the "User" table
+    const userExists = await db.query('SELECT * FROM "User" WHERE email = $1', [
+      email,
+    ]);
+
+    if (userExists.rows.length > 0) {
+      return res.status(400).json({
+        error: "User with the provided email does not exist.",
+      });
+    }
+
+    // Check if the email already exists in the "ambassadorRequest" table
+    const ambassadorRequestExists = await db.query(
+      "SELECT * FROM ambassadorRequest WHERE email = $1",
+      [email]
+    );
+
+    if (ambassadorRequestExists.rows.length > 0) {
+      return res.status(400).json({
+        error: "Ambassador request with the provided email already exists.",
+      });
+    }
+
+    console.log(req.files);
+
     // Access uploaded files details through req.files
     if (!req.files || !req.files["resume"] || !req.files["self_intro_video"]) {
       return res
@@ -26,7 +51,7 @@ exports.embassador_register = async (req, res) => {
     const resume = req.files["resume"][0].path; // Access the resume file
     const self_intro_video = req.files["self_intro_video"][0].path; // Access the aself_intro_video files
     await db.query(
-      `insert into embassadors(email,  full_name, phone, date_of_birth, country, nationality, description, resume, self_intro_video, embassador_type) values ($1 , $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+      `insert into ambassadorRequest (email,  full_name, phone, dob, country, nationality, description, resume, self_intro_video, ambassador_type) values ($1 , $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
       [
         email,
         full_name,
@@ -37,13 +62,13 @@ exports.embassador_register = async (req, res) => {
         description,
         resume,
         self_intro_video,
-        embassador_type,
+        ambassador_type,
       ]
     );
 
     return res.status(201).json({
       success: true,
-      message: "The embassador registration was successfull",
+      message: "The Ambassador registration was successfull",
     });
   } catch (error) {
     console.log(error.message);

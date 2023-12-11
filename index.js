@@ -16,12 +16,19 @@ app.use(cors({ origin: CLIENT_URL, credentials: true }));
 app.use(passport.initialize());
 
 // import routes
-const donatorRoutes = require("./src/routes/donator_auth");
-const embassadorRoutes = require("./src/routes/embassador");
+const donatorRoutes = require("./src/routes/user_auth");
+const ambassadorRoutes = require("./src/routes/ambassador");
+const campaignRoutes = require("./src/routes/campaign");
+const blogRoutes = require("./src/routes/blog");
+const eventRoutes = require("./src/routes/event");
 
 // initialize routes
-app.use("/api/donator", donatorRoutes);
-app.use("/api/embassador", embassadorRoutes);
+app.use("/api/donor", donatorRoutes);
+app.use("/api/ambassador", ambassadorRoutes);
+app.use("/api/campaign", campaignRoutes);
+app.use("/api/blog", blogRoutes);
+app.use("/api/event", eventRoutes);
+
 app.use("/", (req, res) => {
   console.log("Welcome to astronova");
 });

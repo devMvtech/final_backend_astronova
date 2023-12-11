@@ -3,11 +3,11 @@ const multer = require("multer");
 const path = require("path");
 
 const {
-  embassador_register,
+  ambassador_register,
   getallEmbassador,
   getEmbassador,
   deleteEmbassador,
-} = require("../controllers/embassador");
+} = require("../controllers/ambassador");
 
 // Authenticate Routes
 const { userAuth } = require("../middlewares/auth-middleware");
@@ -16,7 +16,7 @@ const { userAuth } = require("../middlewares/auth-middleware");
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "embassador");
+    cb(null, "ambassador");
   },
   filename: (req, file, cb) => {
     const ext = path.extname(file.originalname);
@@ -33,12 +33,12 @@ const upload = multer({ storage: storage });
 const router = Router();
 
 router.post(
-  "/register",
+  "/registeration_form",
   upload.fields([
     { name: "resume", maxCount: 1 }, // For a single avatar image
     { name: "self_intro_video", maxCount: 1 }, // For up to 1 documents
   ]),
-  embassador_register
+  ambassador_register
 );
 
 router.get("/all-embassadors", getallEmbassador);

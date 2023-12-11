@@ -1,86 +1,109 @@
--- Donators
-CREATE TABLE donators(
-    donator_id serial primary key,
-    email varchar(255) unique not null,
-    password varchar(255) not null,
-    name varchar(20) not null,
-    phone varchar(20) unique not null,
-    address varchar(100) not null,
-    created_at date default current_date
-);
 
-
--- Embassador
-
-CREATE TABLE Embassadors (
-    embassador_id SERIAL PRIMARY KEY,
-    full_name VARCHAR(100) NOT NULL,
-    email VARCHAR(100) UNIQUE NOT NULL,
+-- Define the User table with a foreign key to Role
+CREATE TABLE User (
+    user_id SERIAL PRIMARY KEY,
+    username VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
     phone VARCHAR(20) NOT NULL,
-    date_of_birth DATE,
-    country VARCHAR(50),
-    nationality VARCHAR(50),
+    address VARCHAR(20) NOT NULL,
+    role VARCHAR(50) CHECK (role IN ('Donor', 'Coordinator', 'Ambassador', 'Admin')) NOT NULL
+);
+
+
+
+-- Define the Ambassador table with a foreign key to User
+CREATE TABLE Ambassador (
+    ambassador_id INT PRIMARY KEY REFERENCES "User"(user_id),
+    email VARCHAR(255) NOT NULL,
+    donors INT[] REFERENCES "User"(user_id), 
+    ambassador_type VARCHAR(20) CHECK (ambassador_type IN ('Country Ambassador', 'Student Ambassador')) NOT NULL
+);
+
+-- Define the Payment table with a foreign key to Campaigns
+CREATE TABLE Payment (
+    payment_id SERIAL PRIMARY KEY,
+    campaign_id INT REFERENCES Campaigns(campaign_id),
+    donor_id INT REFERENCES "User"(user_id),
+    amount_paid DECIMAL,
+    payment_date DATE,
+    -- Add other attributes as needed
+);
+
+CREATE TABLE AmbassadorRequest (
+    request_id SERIAL PRIMARY KEY,
+    full_name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    phone VARCHAR(20) NOT NULL,
+    dob DATE NOT NULL,
+    country VARCHAR(100) NOT NULL,
+    nationality VARCHAR(100) NOT NULL,
     description TEXT,
-    resume VARCHAR(200),
-    self_intro_video VARCHAR(200), -- Assuming a link or reference to the video
-    embassador_type VARCHAR(20) CHECK (embassador_type IN ('Country Embassador', 'Student Embassador'))
-);
-
--- Blogs
-
-CREATE TABLE Blogs (
-    blog_id SERIAL PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    subtitle VARCHAR(255),
-    description TEXT NOT NULL,
-    tags TEXT[], -- Using PostgreSQL array type for storing tags
-    image_url VARCHAR(255), -- Storing URL to the image
-    video_url VARCHAR(255) -- Optional field for video URL
+    resume VARCHAR(255), 
+    self_intro_video VARCHAR(255), 
+    ambassador_type VARCHAR(20) CHECK (ambassador_type IN ('Country Ambassador', 'Student Ambassador')) NOT NULL,
+    status VARCHAR(20) DEFAULT 'Pending' CHECK (status IN ('Approved', 'Rejected', 'Pending')) NOT NULL,
+    user_id INT REFERENCES "User"(user_id)
 );
 
 
--- Events
 
+-- Define the Events table with a foreign key to Coordinator
 CREATE TABLE Events (
     event_id SERIAL PRIMARY KEY,
+    coordinator_id INT REFERENCES "User"(user_id),
     title VARCHAR(255) NOT NULL,
-    description TEXT NOT NULL,
-    image_url VARCHAR(255),
-    video_url VARCHAR(255),
+    description TEXT,
+    image VARCHAR(255),
+    video VARCHAR(255),
     google_form_link VARCHAR(255)
+    
 );
 
+-- Define the Blogs table with a foreign key to Coordinator
+CREATE TABLE Blogs (
+    blog_id SERIAL PRIMARY KEY,
+    coordinator_id INT REFERENCES "User"(user_id),
+    title VARCHAR(255) NOT NULL,
+    subtitle VARCHAR(255),
+    description TEXT,
+    tags VARCHAR[] DEFAULT ARRAY[]::VARCHAR[],
+    image VARCHAR(255),
+    video VARCHAR(255)
+);
 
--- Campaigns
-
+-- Define the Campaigns table with foreign keys to Coordinator and Admin
 CREATE TABLE Campaigns (
     campaign_id SERIAL PRIMARY KEY,
+    coordinator_id INT REFERENCES "User"(user_id),
+    admin_id INT REFERENCES "User"(user_id),
     title VARCHAR(255) NOT NULL,
     short_description TEXT,
     long_description TEXT,
-    video_url VARCHAR(255),
-    department VARCHAR(50) CHECK (department IN ('Department A', 'Department B', 'Department C')), -- Option set as requested
-    featured_image_url VARCHAR(255),
-    gallery_images TEXT[], -- Storing URLs to multiple images in an array
-    target_fund_dollars DECIMAL(15, 2),
-    target_fund_rupees DECIMAL(15, 2),
-    achieved_fund DECIMAL(15, 2),
+    video VARCHAR(255),
+    department VARCHAR(20) CHECK (department IN ('Subsidiaries', 'Innovation', 'Infrastructure')),
+    featured_image VARCHAR(255),
+    gallery_images VARCHAR[] DEFAULT ARRAY[]::VARCHAR[],
+    target_fund_dollars DECIMAL,
+    target_fund_rupees DECIMAL,
+    achieved_fund DECIMAL,
     start_date DATE,
-    end_date DATE
+    end_date DATE,
+    -- Add other attributes as needed
 );
 
-
---  tinkeringlabprojects
-
+-- Define the TinkeringLabProjects table with foreign keys to Admin
 CREATE TABLE TinkeringLabProjects (
     project_id SERIAL PRIMARY KEY,
+    admin_id INT REFERENCES "User"(user_id),
     name VARCHAR(255) NOT NULL,
-    description TEXT NOT NULL,
-    short_description TEXT NOT NULL,
-    team_members TEXT[] NOT NULL,
-    images TEXT[] NOT NULL,
-    featured_image_url VARCHAR(255) NOT NULL,
-    mentor VARCHAR(100) NOT NULL,
-    priority VARCHAR(20) NOT NULL CHECK (priority IN ('high', 'medium', 'low')),
-    status VARCHAR(20) NOT NULL CHECK (status IN ('completed', 'in progress', 'not started', 'overdue', 'on hold'))
+    description TEXT,
+    short_description TEXT,
+    team_members VARCHAR[][] DEFAULT ARRAY[]::VARCHAR[][],
+    images VARCHAR[] DEFAULT ARRAY[]::VARCHAR[],
+    featured_image_url VARCHAR(255),
+    mentor VARCHAR(255),
+    priority VARCHAR(255) CHECK (priority IN ('high', 'medium', 'low')),
+    status VARCHAR(255) CHECK (status IN ('completed', 'in progress', 'not started', 'overdue', 'on hold')),
+    -- Add other attributes as needed
 );
