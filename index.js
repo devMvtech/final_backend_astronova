@@ -23,7 +23,7 @@ const blogRoutes = require("./src/routes/blog");
 const eventRoutes = require("./src/routes/event");
 
 // initialize routes
-app.use("/api/donor", donatorRoutes);
+app.use("/api/user", donatorRoutes);
 app.use("/api/ambassador", ambassadorRoutes);
 app.use("/api/campaign", campaignRoutes);
 app.use("/api/blog", blogRoutes);
