@@ -3,7 +3,7 @@ const app = express();
 const { PORT, CLIENT_URL } = require("./src/constants");
 const cookieParser = require("cookie-parser");
 const passport = require("passport");
-// const cors = require("cors");
+const cors = require("cors");
 // const path = require("path");
 
 // import passport middleware
@@ -12,7 +12,7 @@ require("./src/middlewares/passport-middleware");
 // initialize middlewares
 app.use(express.json());
 app.use(cookieParser());
-// app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.use(passport.initialize());
 
 // import routes
@@ -37,8 +37,8 @@ app.use("/", (req, res) => {
 const appStart = () => {
   try {
     app.listen(PORT, () => {
-      SERVER_URL: process.env.SERVER_URL,
-        console.log(`The app is running at http://localhost:${PORT}`);
+      SERVER_URL: process.env.SERVER_URL;
+      console.log(`The app is running at http://localhost:${PORT}`);
     });
   } catch (error) {
     console.log(`Error : ${error.message}`);
