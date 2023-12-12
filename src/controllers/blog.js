@@ -22,6 +22,14 @@ exports.createBlog = async (req, res) => {
     // if (!req.files || !req.files["image"] || !req.files["video"]) {
     //   return res.status(400).send("Please provide both image and video files.");
     // }
+    await Promise.all([
+      new Promise((resolve) =>
+        req.files["image"] ? resolve() : setTimeout(resolve, 100)
+      ),
+      new Promise((resolve) =>
+        req.files["video"] ? resolve() : setTimeout(resolve, 100)
+      ),
+    ]);
 
     const image =
       req.files["image"] && req.files["image"][0]
@@ -86,6 +94,14 @@ exports.updateBlog = async (req, res) => {
     // if (!req.files || !req.files["image"] || !req.files["video"]) {
     //   return res.status(400).send("Please provide both image and video files.");
     // }
+    await Promise.all([
+      new Promise((resolve) =>
+        req.files["image"] ? resolve() : setTimeout(resolve, 100)
+      ),
+      new Promise((resolve) =>
+        req.files["video"] ? resolve() : setTimeout(resolve, 100)
+      ),
+    ]);
 
     const image =
       req.files["image"] && req.files["image"][0]

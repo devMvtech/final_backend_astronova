@@ -43,7 +43,18 @@ exports.createCampaign = async (req, res) => {
     }
 
       */
-
+    // Wait for the files to be available
+    await Promise.all([
+      new Promise((resolve) =>
+        req.files["featured_image"] ? resolve() : setTimeout(resolve, 100)
+      ),
+      new Promise((resolve) =>
+        req.files["gallery_images"] ? resolve() : setTimeout(resolve, 100)
+      ),
+      new Promise((resolve) =>
+        req.files["video"] ? resolve() : setTimeout(resolve, 100)
+      ),
+    ]);
     const featured_image =
       req.files["featured_image"] && req.files["featured_image"][0]
         ? req.files["featured_image"][0].path
@@ -132,6 +143,17 @@ exports.updateCampaign = async (req, res) => {
     }
 
       */
+    await Promise.all([
+      new Promise((resolve) =>
+        req.files["featured_image"] ? resolve() : setTimeout(resolve, 100)
+      ),
+      new Promise((resolve) =>
+        req.files["gallery_images"] ? resolve() : setTimeout(resolve, 100)
+      ),
+      new Promise((resolve) =>
+        req.files["video"] ? resolve() : setTimeout(resolve, 100)
+      ),
+    ]);
 
     const featured_image =
       req.files["featured_image"] && req.files["featured_image"][0]
