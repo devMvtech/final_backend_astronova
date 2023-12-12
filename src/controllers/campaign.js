@@ -30,6 +30,7 @@ exports.createCampaign = async (req, res) => {
     }
 
     // Access uploaded files details through req.files
+    /*
     if (
       !req.files ||
       !req.files["featured_image"] ||
@@ -41,9 +42,21 @@ exports.createCampaign = async (req, res) => {
         .send("Please provide both featured_image and gallery_images.");
     }
 
-    const featured_image = req.files["featured_image"][0].path;
-    const gallery_images = req.files["gallery_images"].map((file) => file.path);
-    const video = req.files["video"][0].path;
+      */
+
+    const featured_image =
+      req.files["featured_image"] && req.files["featured_image"][0]
+        ? req.files["featured_image"][0].path
+        : null;
+    const gallery_images =
+      req.files["gallery_images"] && req.files["gallery_images"].length > 0
+        ? req.files["gallery_images"].map((file) => file.path)
+        : null;
+    const video =
+      req.files["video"] && req.files["video"][0]
+        ? req.files["video"][0].path
+        : null;
+
     await db.query(
       `INSERT INTO campaigns (coordinator_id, title, short_description, long_description, video, department, featured_image, gallery_images, target_fund_dollars, target_fund_rupees, start_date, end_date) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
       [
@@ -106,6 +119,7 @@ exports.updateCampaign = async (req, res) => {
     }
 
     // Access uploaded files details through req.files
+    /*
     if (
       !req.files ||
       !req.files["featured_image"] ||
@@ -117,9 +131,20 @@ exports.updateCampaign = async (req, res) => {
         .send("Please provide both featured_image and gallery_images.");
     }
 
-    const featured_image = req.files["featured_image"][0].path;
-    const gallery_images = req.files["gallery_images"].map((file) => file.path);
-    const video = req.files["video"][0].path;
+      */
+
+    const featured_image =
+      req.files["featured_image"] && req.files["featured_image"][0]
+        ? req.files["featured_image"][0].path
+        : null;
+    const gallery_images =
+      req.files["gallery_images"] && req.files["gallery_images"].length > 0
+        ? req.files["gallery_images"].map((file) => file.path)
+        : null;
+    const video =
+      req.files["video"] && req.files["video"][0]
+        ? req.files["video"][0].path
+        : null;
 
     // Update the campaign in the database
     await db.query(

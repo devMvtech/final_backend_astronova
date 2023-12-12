@@ -27,13 +27,19 @@ exports.createEvent = async (req, res) => {
     }
 
     // Access uploaded files details through req.files
-    if (!req.files || !req.files["image"] || !req.files["video"]) {
-      return res.status(400).send("Please provide both image and video files.");
-    }
+    // if (!req.files || !req.files["image"] || !req.files["video"]) {
+    //   return res.status(400).send("Please provide both image and video files.");
+    // }
 
-    const image = req.files["image"][0].path;
-    const video = req.files["video"][0].path;
+    const image =
+      req.files["image"] && req.files["image"][0]
+        ? req.files["image"][0].path
+        : null;
 
+    const video =
+      req.files["video"] && req.files["video"][0]
+        ? req.files["video"][0].path
+        : null;
     // Separate file upload logic from event creation
     await db.query(
       `INSERT INTO Events (coordinator_id, title, description, image_url, video_url, google_form_link) VALUES ($1, $2, $3, $4, $5, $6)`,
@@ -54,15 +60,15 @@ exports.createEvent = async (req, res) => {
   } catch (error) {
     // Handle errors, log them, and possibly delete the uploaded files
     console.log(error.message);
-    const image = req.files["image"][0].path;
-    const video = req.files["video"][0].path;
+    // const image = req.files["image"][0].path;
+    // const video = req.files["video"][0].path;
 
-    if (image) {
-      fs.unlinkSync(image);
-    }
-    if (video) {
-      fs.unlinkSync(video);
-    }
+    // if (image) {
+    //   fs.unlinkSync(image);
+    // }
+    // if (video) {
+    //   fs.unlinkSync(video);
+    // }
 
     return res.status(500).json({
       error: error.message,
@@ -91,12 +97,19 @@ exports.updateEvent = async (req, res) => {
     }
 
     // Access uploaded files details through req.files
-    if (!req.files || !req.files["image"] || !req.files["video"]) {
-      return res.status(400).send("Please provide both image and video files.");
-    }
+    // if (!req.files || !req.files["image"] || !req.files["video"]) {
+    //   return res.status(400).send("Please provide both image and video files.");
+    // }
 
-    const image = req.files["image"][0].path;
-    const video = req.files["video"][0].path;
+    const image =
+      req.files["image"] && req.files["image"][0]
+        ? req.files["image"][0].path
+        : null;
+
+    const video =
+      req.files["video"] && req.files["video"][0]
+        ? req.files["video"][0].path
+        : null;
 
     // Update the event in the database
     await db.query(
@@ -125,15 +138,15 @@ exports.updateEvent = async (req, res) => {
     });
   } catch (error) {
     console.log(error.message);
-    const image = req.files["image"][0].path;
-    const video = req.files["video"][0].path;
+    // const image = req.files["image"][0].path;
+    // const video = req.files["video"][0].path;
 
-    if (image) {
-      fs.unlinkSync(image);
-    }
-    if (video) {
-      fs.unlinkSync(video);
-    }
+    // if (image) {
+    //   fs.unlinkSync(image);
+    // }
+    // if (video) {
+    //   fs.unlinkSync(video);
+    // }
     return res.status(500).json({
       error: error.message,
     });
