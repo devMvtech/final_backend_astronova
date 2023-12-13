@@ -113,6 +113,9 @@ exports.updateCampaign = async (req, res) => {
     target_fund_dollars,
     target_fund_rupees,
     start_date,
+    featured_image,
+    gallery_images,
+    video,
     end_date,
   } = req.body;
 
@@ -143,30 +146,30 @@ exports.updateCampaign = async (req, res) => {
     }
 
       */
-    await Promise.all([
-      new Promise((resolve) =>
-        req.files["featured_image"] ? resolve() : setTimeout(resolve, 100)
-      ),
-      new Promise((resolve) =>
-        req.files["gallery_images"] ? resolve() : setTimeout(resolve, 100)
-      ),
-      new Promise((resolve) =>
-        req.files["video"] ? resolve() : setTimeout(resolve, 100)
-      ),
-    ]);
+    // await Promise.all([
+    //   new Promise((resolve) =>
+    //     req.files["featured_image"] ? resolve() : setTimeout(resolve, 100)
+    //   ),
+    //   new Promise((resolve) =>
+    //     req.files["gallery_images"] ? resolve() : setTimeout(resolve, 100)
+    //   ),
+    //   new Promise((resolve) =>
+    //     req.files["video"] ? resolve() : setTimeout(resolve, 100)
+    //   ),
+    // ]);
 
-    const featured_image =
-      req.files["featured_image"] && req.files["featured_image"][0]
-        ? req.files["featured_image"][0].path
-        : null;
-    const gallery_images =
-      req.files["gallery_images"] && req.files["gallery_images"].length > 0
-        ? req.files["gallery_images"].map((file) => file.path)
-        : null;
-    const video =
-      req.files["video"] && req.files["video"][0]
-        ? req.files["video"][0].path
-        : null;
+    // const featured_image =
+    //   req.files["featured_image"] && req.files["featured_image"][0]
+    //     ? req.files["featured_image"][0].path
+    //     : null;
+    // const gallery_images =
+    //   req.files["gallery_images"] && req.files["gallery_images"].length > 0
+    //     ? req.files["gallery_images"].map((file) => file.path)
+    //     : null;
+    // const video =
+    //   req.files["video"] && req.files["video"][0]
+    //     ? req.files["video"][0].path
+    //     : null;
 
     // Update the campaign in the database
     await db.query(
@@ -206,7 +209,7 @@ exports.updateCampaign = async (req, res) => {
       message: "Campaign updated successfully.",
     });
   } catch (error) {
-    console.log(error.message);
+    console.log(error);
     return res.status(500).json({
       error: error.message,
     });

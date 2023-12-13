@@ -39,20 +39,20 @@ const router = Router();
 
 router.post(
   "/campaignCreate",
-  upload.fields([
-    { name: "featured_image", maxCount: 1 },
-    { name: "gallery_images", maxCount: 5 },
-    { name: "video", maxCount: 5 },
-  ]),
+  // upload.fields([
+  //   { name: "featured_image", maxCount: 1 },
+  //   { name: "gallery_images", maxCount: 5 },
+  //   { name: "video", maxCount: 5 },
+  // ]),
   createCampaign
 );
-router.post(
+router.put(
   "/campaignUpdate/:id",
-  upload.fields([
-    { name: "featured_image", maxCount: 1 },
-    { name: "gallery_images", maxCount: 5 },
-    { name: "video", maxCount: 5 },
-  ]),
+  // upload.fields([
+  //   { name: "featured_image", maxCount: 1 },
+  //   { name: "gallery_images", maxCount: 5 },
+  //   { name: "video", maxCount: 5 },
+  // ]),
   updateCampaign
 );
 router.get("/allCampaign", getallCampaign);
