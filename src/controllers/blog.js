@@ -3,7 +3,7 @@ const db = require("../../database.js");
 const fs = require("fs");
 // Create Blog
 
-exports.createBlog = async (req, res) => {
+exports.createBlog = async (req, res, fileUrls) => {
   const { coordinator_id, title, subtitle, description, tags } = req.body;
 
   try {
@@ -17,29 +17,14 @@ exports.createBlog = async (req, res) => {
         error: "Blog with the provided title already exists.",
       });
     }
+    // Process the file URLs
+    const image = fileUrls["image"]
+      ? fileUrls["image"].map((file) => file.downloadURL)
+      : [];
 
-    // Access uploaded files details through req.files
-    // if (!req.files || !req.files["image"] || !req.files["video"]) {
-    //   return res.status(400).send("Please provide both image and video files.");
-    // }
-    await Promise.all([
-      new Promise((resolve) =>
-        req.files["image"] ? resolve() : setTimeout(resolve, 100)
-      ),
-      new Promise((resolve) =>
-        req.files["video"] ? resolve() : setTimeout(resolve, 100)
-      ),
-    ]);
-
-    const image =
-      req.files["image"] && req.files["image"][0]
-        ? req.files["image"][0].path
-        : null;
-
-    const video =
-      req.files["video"] && req.files["video"][0]
-        ? req.files["video"][0].path
-        : null;
+    const video = fileUrls["video"]
+      ? fileUrls["video"].map((file) => file.downloadURL)
+      : [];
 
     // Separate file upload logic from blog creation
     await db.query(
@@ -71,7 +56,7 @@ exports.createBlog = async (req, res) => {
 };
 // Update Blog
 
-exports.updateBlog = async (req, res) => {
+exports.updateBlog = async (req, res, fileUrls) => {
   const blogId = req.params.id; // Assuming you have a route parameter for the blog ID
 
   // Extract the fields you want to update from the request body
@@ -90,28 +75,14 @@ exports.updateBlog = async (req, res) => {
       });
     }
 
-    // Access uploaded files details through req.files
-    // if (!req.files || !req.files["image"] || !req.files["video"]) {
-    //   return res.status(400).send("Please provide both image and video files.");
-    // }
-    await Promise.all([
-      new Promise((resolve) =>
-        req.files["image"] ? resolve() : setTimeout(resolve, 100)
-      ),
-      new Promise((resolve) =>
-        req.files["video"] ? resolve() : setTimeout(resolve, 100)
-      ),
-    ]);
+    // Process the file URLs
+    const image = fileUrls["image"]
+      ? fileUrls["image"].map((file) => file.downloadURL)
+      : [];
 
-    const image =
-      req.files["image"] && req.files["image"][0]
-        ? req.files["image"][0].path
-        : null;
-
-    const video =
-      req.files["video"] && req.files["video"][0]
-        ? req.files["video"][0].path
-        : null;
+    const video = fileUrls["video"]
+      ? fileUrls["video"].map((file) => file.downloadURL)
+      : [];
 
     // Update the blog in the database
     await db.query(

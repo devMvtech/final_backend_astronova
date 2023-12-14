@@ -1,4 +1,15 @@
 const { Router } = require("express");
+const { initializeApp } = require("firebase/app");
+const {
+  getStorage,
+  ref,
+  getDownloadURL,
+  uploadBytesResumable,
+} = require("firebase/storage");
+const { firebaseConfig } = require("../config/firebase_config");
+const { config } = require("dotenv");
+config();
+
 const multer = require("multer");
 const path = require("path");
 
@@ -12,47 +23,201 @@ const {
   createBlog,
 } = require("../controllers/blog");
 
-// Multer Configuration for handling file uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "blog");
-  },
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname);
-    cb(
-      null,
-      file.fieldname + "-" + Date.now() + path.extname(file.originalname)
-    );
-  },
-});
+// Initialize a firebase application
+initializeApp(firebaseConfig);
+console.log(`api key of firebase is `, firebaseConfig.apiKey);
 
-const upload = multer({
-  storage: storage,
-  limits: {
-    fileSize: 1024 * 1024 * 3,
-    files: 5, // Max number of files
-  },
-});
+// Initialize cloud storage and get a reference to the service
+const storage = getStorage();
+
+// Setting up multer as a middleware to grab photo uploads
+const upload = multer({ storage: multer.memoryStorage() });
+
+// Middleware for handling file uploads
+const uploadMiddleware = upload.fields([
+  { name: "image", maxCount: 1 },
+  { name: "video", maxCount: 1 },
+]);
+
+const giveCurrentDateTime = () => {
+  const today = new Date();
+  const date =
+    today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
+  const time =
+    today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+  const dateTime = date + " " + time;
+  return dateTime;
+};
 
 // Route
 const router = Router();
 
-router.post(
-  "/blogCreate",
-  upload.fields([
-    { name: "image", maxCount: 1 },
-    { name: "video", maxCount: 1 },
-  ]),
-  createBlog
-);
-router.post(
-  "/blogUpdate/:id",
-  upload.fields([
-    { name: "image", maxCount: 1 },
-    { name: "video", maxCount: 1 },
-  ]),
-  updateBlog
-);
+router.post("/blogCreate", uploadMiddleware, async (req, res) => {
+  try {
+    // Ensure req.files is defined
+    if (!req.files) {
+      return res.status(400).json({ error: "No files uploaded." });
+    }
+
+    // Upload files to Firebase Storage
+    const fileUrls = await Promise.all(
+      Object.entries(req.files).map(async ([fieldName, files]) => {
+        if (!Array.isArray(files)) {
+          files = [files];
+        }
+
+        // Upload each file
+        const uploadedFiles = await Promise.all(
+          files.map(async (file) => {
+            try {
+              const dateTime = giveCurrentDateTime();
+              const storageRef = ref(
+                storage,
+                `blog/${file.originalname}_${dateTime}`
+              );
+
+              // Create file metadata including the content type
+              const metadata = {
+                contentType: file.mimetype,
+              };
+
+              // Upload the file in the bucket storage
+              const snapshot = await uploadBytesResumable(
+                storageRef,
+                file.buffer,
+                metadata
+              );
+
+              // Grab the public url
+              const downloadURL = await getDownloadURL(snapshot.ref);
+
+              return {
+                fieldName,
+                originalname: file.originalname,
+                downloadURL,
+              };
+            } catch (error) {
+              console.error(`Error uploading ${fieldName}:`, error);
+              return null; // Handle the error as needed
+            }
+          })
+        );
+
+        return uploadedFiles.filter((file) => file !== null);
+      })
+    );
+
+    // Construct an object with file URLs
+    const formattedFileUrls = fileUrls.reduce((acc, files) => {
+      files.forEach((file) => {
+        acc[file.fieldName] = acc[file.fieldName] || [];
+        acc[file.fieldName].push({
+          originalname: file.originalname,
+          downloadURL: file.downloadURL,
+        });
+      });
+      return acc;
+    }, {});
+
+    // Call the createCampaign function with campaign data and file URLs
+    await createBlog(req, res, formattedFileUrls);
+  } catch (error) {
+    console.error("Error handling file uploads:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+// router.post(
+//   "/blogCreate",
+//   upload.fields([
+//     { name: "image", maxCount: 1 },
+//     { name: "video", maxCount: 1 },
+//   ]),
+//   createBlog
+// );
+
+router.put("/blogUpdate/:id", uploadMiddleware, async (req, res) => {
+  try {
+    // Ensure req.files is defined
+    if (!req.files) {
+      return res.status(400).json({ error: "No files uploaded." });
+    }
+
+    // Upload files to Firebase Storage
+    const fileUrls = await Promise.all(
+      Object.entries(req.files).map(async ([fieldName, files]) => {
+        if (!Array.isArray(files)) {
+          files = [files];
+        }
+
+        // Upload each file
+        const uploadedFiles = await Promise.all(
+          files.map(async (file) => {
+            try {
+              const dateTime = giveCurrentDateTime();
+              const storageRef = ref(
+                storage,
+                `blog/${file.originalname}_${dateTime}`
+              );
+
+              // Create file metadata including the content type
+              const metadata = {
+                contentType: file.mimetype,
+              };
+
+              // Upload the file in the bucket storage
+              const snapshot = await uploadBytesResumable(
+                storageRef,
+                file.buffer,
+                metadata
+              );
+
+              // Grab the public url
+              const downloadURL = await getDownloadURL(snapshot.ref);
+
+              return {
+                fieldName,
+                originalname: file.originalname,
+                downloadURL,
+              };
+            } catch (error) {
+              console.error(`Error uploading ${fieldName}:`, error);
+              return null; // Handle the error as needed
+            }
+          })
+        );
+
+        return uploadedFiles.filter((file) => file !== null);
+      })
+    );
+
+    // Construct an object with file URLs
+    const formattedFileUrls = fileUrls.reduce((acc, files) => {
+      files.forEach((file) => {
+        acc[file.fieldName] = acc[file.fieldName] || [];
+        acc[file.fieldName].push({
+          originalname: file.originalname,
+          downloadURL: file.downloadURL,
+        });
+      });
+      return acc;
+    }, {});
+
+    // Call the createCampaign function with campaign data and file URLs
+    await updateBlog(req, res, formattedFileUrls);
+  } catch (error) {
+    console.error("Error handling file uploads:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// router.post(
+//   "/blogUpdate/:id",
+//   upload.fields([
+//     { name: "image", maxCount: 1 },
+//     { name: "video", maxCount: 1 },
+//   ]),
+//   updateBlog
+// );
 router.get("/allBlog", getAllBlogs);
 router.get("/:id", getBlog);
 router.delete("/deleteBlog/:id", deleteBlog);
