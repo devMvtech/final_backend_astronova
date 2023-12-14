@@ -3,7 +3,7 @@ const db = require("../../database.js");
 
 // Create Campaign
 
-exports.createCampaign = async (req, res) => {
+exports.createCampaign = async (req, res, fileUrls) => {
   const {
     coordinator_id,
     title,
@@ -42,8 +42,9 @@ exports.createCampaign = async (req, res) => {
         .send("Please provide both featured_image and gallery_images.");
     }
 
-      */
+     
     // Wait for the files to be available
+
     await Promise.all([
       new Promise((resolve) =>
         req.files["featured_image"] ? resolve() : setTimeout(resolve, 100)
@@ -67,7 +68,18 @@ exports.createCampaign = async (req, res) => {
       req.files["video"] && req.files["video"][0]
         ? req.files["video"][0].path
         : null;
+*/
 
+    // console.log(fileUrls);
+    const featured_image = fileUrls["featured_image"]
+      ? fileUrls["featured_image"].map((file) => file.downloadURL)
+      : [];
+    const gallery_images = fileUrls["gallery_images"]
+      ? fileUrls["gallery_images"].map((file) => file.downloadURL)
+      : [];
+    const video = fileUrls["video"]
+      ? fileUrls["video"].map((file) => file.downloadURL)
+      : [];
     await db.query(
       `INSERT INTO campaigns (coordinator_id, title, short_description, long_description, video, department, featured_image, gallery_images, target_fund_dollars, target_fund_rupees, start_date, end_date) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
       [
@@ -100,10 +112,9 @@ exports.createCampaign = async (req, res) => {
 
 // Update Campaign
 
-exports.updateCampaign = async (req, res) => {
-  const campaignId = req.params.id; // Assuming you have a route parameter for the campaign ID
+exports.updateCampaign = async (req, res, fileUrls) => {
+  const campaignId = req.params.id; // Assuming the campaign ID is passed in the URL params
 
-  // Extract the fields you want to update from the request body
   const {
     coordinator_id,
     title,
@@ -113,9 +124,6 @@ exports.updateCampaign = async (req, res) => {
     target_fund_dollars,
     target_fund_rupees,
     start_date,
-    featured_image,
-    gallery_images,
-    video,
     end_date,
   } = req.body;
 
@@ -133,60 +141,36 @@ exports.updateCampaign = async (req, res) => {
     }
 
     // Access uploaded files details through req.files
-    /*
-    if (
-      !req.files ||
-      !req.files["featured_image"] ||
-      !req.files["gallery_images"] ||
-      !req.files["video"]
-    ) {
-      return res
-        .status(400)
-        .send("Please provide both featured_image and gallery_images.");
-    }
+    // ... (similar to your createCampaign logic)
 
-      */
-    // await Promise.all([
-    //   new Promise((resolve) =>
-    //     req.files["featured_image"] ? resolve() : setTimeout(resolve, 100)
-    //   ),
-    //   new Promise((resolve) =>
-    //     req.files["gallery_images"] ? resolve() : setTimeout(resolve, 100)
-    //   ),
-    //   new Promise((resolve) =>
-    //     req.files["video"] ? resolve() : setTimeout(resolve, 100)
-    //   ),
-    // ]);
+    // Process the file URLs
+    const featured_image = fileUrls["featured_image"]
+      ? fileUrls["featured_image"].map((file) => file.downloadURL)
+      : [];
+    const gallery_images = fileUrls["gallery_images"]
+      ? fileUrls["gallery_images"].map((file) => file.downloadURL)
+      : [];
+    const video = fileUrls["video"]
+      ? fileUrls["video"].map((file) => file.downloadURL)
+      : [];
 
-    // const featured_image =
-    //   req.files["featured_image"] && req.files["featured_image"][0]
-    //     ? req.files["featured_image"][0].path
-    //     : null;
-    // const gallery_images =
-    //   req.files["gallery_images"] && req.files["gallery_images"].length > 0
-    //     ? req.files["gallery_images"].map((file) => file.path)
-    //     : null;
-    // const video =
-    //   req.files["video"] && req.files["video"][0]
-    //     ? req.files["video"][0].path
-    //     : null;
-
-    // Update the campaign in the database
+    // Perform the UPDATE operation
     await db.query(
       `UPDATE campaigns 
-       SET coordinator_id = $1,
-           title = $2,
-           short_description = $3,
-           long_description = $4,
-           video = $5,
-           department = $6,
-           featured_image = $7,
-           gallery_images = $8,
-           target_fund_dollars = $9,
-           target_fund_rupees = $10,
-           start_date = $11,
-           end_date = $12
-       WHERE campaign_id = $13`,
+      SET 
+        coordinator_id = $1, 
+        title = $2, 
+        short_description = $3, 
+        long_description = $4, 
+        video = $5, 
+        department = $6, 
+        featured_image = $7, 
+        gallery_images = $8, 
+        target_fund_dollars = $9, 
+        target_fund_rupees = $10, 
+        start_date = $11, 
+        end_date = $12
+      WHERE campaign_id = $13`,
       [
         coordinator_id,
         title,
@@ -206,10 +190,10 @@ exports.updateCampaign = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: "Campaign updated successfully.",
+      message: "Campaign updated successfully",
     });
   } catch (error) {
-    console.log(error);
+    console.log(error.message);
     return res.status(500).json({
       error: error.message,
     });
