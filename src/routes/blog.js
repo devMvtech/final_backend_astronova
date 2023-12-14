@@ -25,7 +25,7 @@ const {
 
 // Initialize a firebase application
 initializeApp(firebaseConfig);
-console.log(`api key of firebase is `, firebaseConfig.apiKey);
+// console.log(`api key of firebase is `, firebaseConfig.apiKey);
 
 // Initialize cloud storage and get a reference to the service
 const storage = getStorage();
