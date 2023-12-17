@@ -3,7 +3,7 @@ const db = require("../../database.js");
 const fs = require("fs");
 // Create Blog
 
-exports.createBlog = async (req, res, fileUrls) => {
+exports.createBlog = async (req, res) => {
   const {
     coordinator_id,
     title,

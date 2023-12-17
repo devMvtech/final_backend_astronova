@@ -51,7 +51,8 @@ const giveCurrentDateTime = () => {
 
 // Route
 const router = Router();
-
+router.post("/blogCreate", createBlog);
+/*
 router.post("/blogCreate", uploadMiddleware, async (req, res) => {
   try {
     // Ensure req.files is defined
@@ -134,7 +135,7 @@ router.post("/blogCreate", uploadMiddleware, async (req, res) => {
 //   ]),
 //   createBlog
 // );
-
+*/
 router.put("/blogUpdate/:id", uploadMiddleware, async (req, res) => {
   try {
     // Ensure req.files is defined
