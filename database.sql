@@ -107,3 +107,21 @@ CREATE TABLE TinkeringLabProjects (
     status VARCHAR(255) CHECK (status IN ('completed', 'in progress', 'not started', 'overdue', 'on hold')),
     -- Add other attributes as needed
 );
+
+
+CREATE TABLE invoices (
+    invoice_id SERIAL PRIMARY KEY,
+    title VARCHAR(255),
+    email VARCHAR(255),
+    mode_of_payment VARCHAR(50) CHECK (mode_of_payment IN ('cash', 'digital')),
+    address VARCHAR(255),
+    description TEXT,
+    quantity INT,
+    rate DECIMAL(10, 2),
+    amount DECIMAL(10, 2),
+    tax_id VARCHAR(20),
+    invoice_date DATE,
+    due_date DATE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+

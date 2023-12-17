@@ -25,16 +25,6 @@ exports.createBlog = async (req, res) => {
         error: "Blog with the provided title already exists.",
       });
     }
-    /*
-    // Process the file URLs
-    const image = fileUrls["image"]
-      ? fileUrls["image"].map((file) => file.downloadURL)
-      : [];
-
-    const video = fileUrls["video"]
-      ? fileUrls["video"].map((file) => file.downloadURL)
-      : [];
-      */
 
     // Separate file upload logic from blog creation
     await db.query(
@@ -49,15 +39,6 @@ exports.createBlog = async (req, res) => {
   } catch (error) {
     // Handle errors, log them, and possibly delete the uploaded files
     console.log(error.message);
-    // const image = req.files["image"][0].path;
-    // const video = req.files["video"][0].path;
-
-    // if (image) {
-    //   fs.unlinkSync(image);
-    // }
-    // if (video) {
-    //   fs.unlinkSync(video);
-    // }
 
     return res.status(500).json({
       error: error.message,
@@ -66,11 +47,19 @@ exports.createBlog = async (req, res) => {
 };
 // Update Blog
 
-exports.updateBlog = async (req, res, fileUrls) => {
+exports.updateBlog = async (req, res) => {
   const blogId = req.params.id; // Assuming you have a route parameter for the blog ID
 
   // Extract the fields you want to update from the request body
-  const { coordinator_id, title, subtitle, description, tags } = req.body;
+  const {
+    coordinator_id,
+    title,
+    subtitle,
+    description,
+    tags,
+    image,
+    video,
+  } = req.body;
 
   try {
     // Check if the blog with the given ID exists
@@ -84,15 +73,6 @@ exports.updateBlog = async (req, res, fileUrls) => {
         error: "Blog not found.",
       });
     }
-
-    // Process the file URLs
-    const image = fileUrls["image"]
-      ? fileUrls["image"].map((file) => file.downloadURL)
-      : [];
-
-    const video = fileUrls["video"]
-      ? fileUrls["video"].map((file) => file.downloadURL)
-      : [];
 
     // Update the blog in the database
     await db.query(
@@ -114,15 +94,7 @@ exports.updateBlog = async (req, res, fileUrls) => {
     });
   } catch (error) {
     console.log(error.message);
-    // const image = req.files["image"][0].path;
-    // const video = req.files["video"][0].path;
 
-    // if (image) {
-    //   fs.unlinkSync(image);
-    // }
-    // if (video) {
-    //   fs.unlinkSync(video);
-    // }
     return res.status(500).json({
       error: error.message,
     });

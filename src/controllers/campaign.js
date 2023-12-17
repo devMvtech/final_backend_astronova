@@ -148,22 +148,6 @@ exports.updateCampaign = async (req, res) => {
       });
     }
 
-    // Access uploaded files details through req.files
-    // ... (similar to your createCampaign logic)
-
-    // Process the file URLs
-    /*
-    const featured_image = fileUrls["featured_image"]
-      ? fileUrls["featured_image"].map((file) => file.downloadURL)
-      : [];
-    const gallery_images = fileUrls["gallery_images"]
-      ? fileUrls["gallery_images"].map((file) => file.downloadURL)
-      : [];
-    const video = fileUrls["video"]
-      ? fileUrls["video"].map((file) => file.downloadURL)
-      : [];
-      */
-
     // Perform the UPDATE operation
     await db.query(
       `UPDATE campaigns 
