@@ -3,7 +3,7 @@ const db = require("../../database.js");
 
 // Create Campaign
 
-exports.createCampaign = async (req, res, fileUrls) => {
+exports.createCampaign = async (req, res) => {
   const {
     coordinator_id,
     title,
@@ -14,7 +14,11 @@ exports.createCampaign = async (req, res, fileUrls) => {
     target_fund_rupees,
     start_date,
     end_date,
+    featured_image,
+    gallery_images,
+    video,
   } = req.body;
+  console.log(req.body);
 
   try {
     // Check if the title already exists in the campaigns table
@@ -69,7 +73,7 @@ exports.createCampaign = async (req, res, fileUrls) => {
         ? req.files["video"][0].path
         : null;
 */
-
+    /*
     // console.log(fileUrls);
     const featured_image = fileUrls["featured_image"]
       ? fileUrls["featured_image"].map((file) => file.downloadURL)
@@ -80,6 +84,7 @@ exports.createCampaign = async (req, res, fileUrls) => {
     const video = fileUrls["video"]
       ? fileUrls["video"].map((file) => file.downloadURL)
       : [];
+      */
     await db.query(
       `INSERT INTO campaigns (coordinator_id, title, short_description, long_description, video, department, featured_image, gallery_images, target_fund_dollars, target_fund_rupees, start_date, end_date) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
       [
@@ -112,7 +117,7 @@ exports.createCampaign = async (req, res, fileUrls) => {
 
 // Update Campaign
 
-exports.updateCampaign = async (req, res, fileUrls) => {
+exports.updateCampaign = async (req, res) => {
   const campaignId = req.params.id; // Assuming the campaign ID is passed in the URL params
 
   const {
@@ -125,6 +130,9 @@ exports.updateCampaign = async (req, res, fileUrls) => {
     target_fund_rupees,
     start_date,
     end_date,
+    featured_image,
+    gallery_images,
+    video,
   } = req.body;
 
   try {
@@ -144,6 +152,7 @@ exports.updateCampaign = async (req, res, fileUrls) => {
     // ... (similar to your createCampaign logic)
 
     // Process the file URLs
+    /*
     const featured_image = fileUrls["featured_image"]
       ? fileUrls["featured_image"].map((file) => file.downloadURL)
       : [];
@@ -153,6 +162,7 @@ exports.updateCampaign = async (req, res, fileUrls) => {
     const video = fileUrls["video"]
       ? fileUrls["video"].map((file) => file.downloadURL)
       : [];
+      */
 
     // Perform the UPDATE operation
     await db.query(

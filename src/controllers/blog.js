@@ -4,7 +4,15 @@ const fs = require("fs");
 // Create Blog
 
 exports.createBlog = async (req, res, fileUrls) => {
-  const { coordinator_id, title, subtitle, description, tags } = req.body;
+  const {
+    coordinator_id,
+    title,
+    subtitle,
+    description,
+    tags,
+    image,
+    video,
+  } = req.body;
 
   try {
     // Check if the title already exists in the Blogs table
@@ -17,6 +25,7 @@ exports.createBlog = async (req, res, fileUrls) => {
         error: "Blog with the provided title already exists.",
       });
     }
+    /*
     // Process the file URLs
     const image = fileUrls["image"]
       ? fileUrls["image"].map((file) => file.downloadURL)
@@ -25,6 +34,7 @@ exports.createBlog = async (req, res, fileUrls) => {
     const video = fileUrls["video"]
       ? fileUrls["video"].map((file) => file.downloadURL)
       : [];
+      */
 
     // Separate file upload logic from blog creation
     await db.query(

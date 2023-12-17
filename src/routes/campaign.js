@@ -82,6 +82,7 @@ router.post("/", upload.single("filename"), async (req, res) => {
 // working multi
 
 // create campaign _ working
+/*
 router.post("/campaignCreate", uploadMiddleware, async (req, res) => {
   try {
     // Ensure req.files is defined
@@ -156,7 +157,7 @@ router.post("/campaignCreate", uploadMiddleware, async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
+*/
 // update campaign _ working
 router.put("/campaignUpdate/:id", uploadMiddleware, async (req, res) => {
   try {
@@ -328,7 +329,7 @@ const giveCurrentDateTime = () => {
 };
 
 ///      test code end
-
+router.post("/campaignCreate", createCampaign);
 router.get("/allCampaign", getallCampaign);
 router.get("/:id", getCampaign);
 router.delete("/deleteCampaign/:id", deleteCampaign);
