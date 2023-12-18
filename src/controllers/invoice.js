@@ -17,6 +17,7 @@ exports.createInvoice = async (req, res) => {
     tax_id,
     invoice_date,
     due_date,
+    coordinator_id,
   } = req.body;
 
   try {
@@ -34,8 +35,8 @@ exports.createInvoice = async (req, res) => {
 
     // Separate file upload logic from invoice creation
     await db.query(
-      `INSERT INTO Invoices (title, email, mode_of_payment, address, description, quantity, rate, amount, tax_id, invoice_date, due_date) 
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
+      `INSERT INTO Invoices (title, email, mode_of_payment, address, description, quantity, rate, amount, tax_id, invoice_date, due_date ,coordinator_id) 
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
       [
         title,
         email,
@@ -48,6 +49,7 @@ exports.createInvoice = async (req, res) => {
         tax_id,
         invoice_date,
         due_date,
+        coordinator_id,
       ]
     );
 
@@ -83,6 +85,7 @@ exports.updateInvoice = async (req, res) => {
     tax_id,
     invoice_date,
     due_date,
+    coordinator_id,
   } = req.body;
 
   try {
@@ -111,8 +114,9 @@ exports.updateInvoice = async (req, res) => {
            amount = $8,
            tax_id = $9,
            invoice_date = $10,
-           due_date = $11
-       WHERE invoice_id = $12`,
+           due_date = $11,
+           coordinator_id = $12,
+       WHERE invoice_id = $13`,
       [
         title,
         email,
@@ -125,6 +129,7 @@ exports.updateInvoice = async (req, res) => {
         tax_id,
         invoice_date,
         due_date,
+        coordinator_id,
         invoiceId,
       ]
     );

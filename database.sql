@@ -111,6 +111,7 @@ CREATE TABLE TinkeringLabProjects (
 
 CREATE TABLE invoices (
     invoice_id SERIAL PRIMARY KEY,
+    coordinator_id INT REFERENCES "User"(user_id),
     title VARCHAR(255),
     email VARCHAR(255),
     mode_of_payment VARCHAR(50) CHECK (mode_of_payment IN ('cash', 'digital')),
@@ -125,10 +126,11 @@ CREATE TABLE invoices (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE SCHEMA IF NOT EXISTS testimonials;
+
 
 CREATE TABLE testimonials(
     testimonial_id SERIAL PRIMARY KEY,
+    coordinator_id INT REFERENCES "User"(user_id),
     name VARCHAR(255) NOT NULL,
     campaign_name VARCHAR(255) NOT NULL,
     image_url VARCHAR(255), -- Assuming you store the image URL
