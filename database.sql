@@ -125,3 +125,14 @@ CREATE TABLE invoices (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE SCHEMA IF NOT EXISTS testimonials;
+
+CREATE TABLE testimonials(
+    testimonial_id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    campaign_name VARCHAR(255) NOT NULL,
+    image_url VARCHAR(255), -- Assuming you store the image URL
+    description TEXT NOT NULL
+);
+
+-- You can add any additional constraints or indexes as needed.
