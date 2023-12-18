@@ -115,7 +115,7 @@ exports.updateInvoice = async (req, res) => {
            tax_id = $9,
            invoice_date = $10,
            due_date = $11,
-           coordinator_id = $12,
+           coordinator_id = $12
        WHERE invoice_id = $13`,
       [
         title,
