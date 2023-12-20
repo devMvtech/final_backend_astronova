@@ -20,8 +20,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:3000",
-      "https://www.astronovafoundation.com",
-      "https://astronovafoundation-website.vercel.app/",
+      "https://astronovafoundation-website.vercel.app",
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
