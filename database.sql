@@ -104,8 +104,7 @@ CREATE TABLE TinkeringLabProjects (
     featured_image_url VARCHAR(255),
     mentor VARCHAR(255),
     priority VARCHAR(255) CHECK (priority IN ('high', 'medium', 'low')),
-    status VARCHAR(255) CHECK (status IN ('completed', 'in progress', 'not started', 'overdue', 'on hold')),
-    -- Add other attributes as needed
+    status VARCHAR(255) CHECK (status IN ('approved', 'pending', 'rejected')),
 );
 
 

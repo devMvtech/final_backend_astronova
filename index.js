@@ -37,6 +37,7 @@ const blogRoutes = require("./src/routes/blog");
 const eventRoutes = require("./src/routes/event");
 const invoiceRoutes = require("./src/routes/invoice");
 const testimonialRoutes = require("./src/routes/testimonial");
+const projectsRoutes = require("./src/routes/project");
 
 // initialize routes
 app.use("/api/user", donatorRoutes);
@@ -46,6 +47,7 @@ app.use("/api/blog", blogRoutes);
 app.use("/api/event", eventRoutes);
 app.use("/api/invoice", invoiceRoutes);
 app.use("/api/testimonial", testimonialRoutes);
+app.use("/api/project", projectsRoutes);
 
 app.use("/", (req, res) => {
   console.log("Welcome to astronova");
