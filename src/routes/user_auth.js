@@ -11,6 +11,7 @@ const {
   getAllUser,
   getUser,
   updateDonor,
+  getProfile,
 } = require("../controllers/user");
 
 // Middlewares
@@ -30,6 +31,7 @@ const router = Router();
 
 router.get("/get-all-user", getAllUser);
 router.get("/get-user/:id", getUser);
+router.get("/get-profile", getProfile);
 router.post(
   "/register-donor",
   registerValidation,

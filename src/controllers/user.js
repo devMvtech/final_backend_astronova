@@ -4,6 +4,8 @@ const db = require("../../database.js");
 const { hash } = require("bcryptjs");
 const { sign } = require("jsonwebtoken");
 const { SECRET } = require("../constants/index.js");
+const jwt = require("jsonwebtoken");
+
 const path = require("path");
 
 // Get All Users
@@ -47,13 +49,70 @@ exports.getAllUser = async (req, res) => {
 
 // Get Single User
 
+exports.getProfile = async (req, res) => {
+  try {
+    const token = await req.cookies.token;
+
+    // Check if the token is present in the request
+    if (!token) {
+      return res.status(400).json({
+        success: false,
+        error: "Token is missing in the request body",
+      });
+    }
+
+    const decodedToken = jwt.verify(token, SECRET); // Assuming SECRET is stored in environment variables
+
+    const id = decodedToken.id;
+
+    const userQuery = await db.query(
+      `SELECT user_id,
+      email,
+      first_name,
+      last_name,
+      phone,
+      address,
+      google_id,
+      google_token,
+      insta_url,
+      postal_code,
+      state,
+      country,
+      twitter_url,
+      role FROM "User" WHERE user_id = $1`,
+      [id]
+    );
+
+    const user = userQuery.rows[0];
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        error: "User not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      user,
+    });
+  } catch (error) {
+    console.error("Error in getProfile:", error.message);
+    return res.status(500).json({
+      success: false,
+      error: "Internal server error",
+    });
+  }
+};
+
+// Get Single User
+
 exports.getUser = async (req, res) => {
   try {
     const { id } = req.params;
     const User = await db.query(
       `SELECT user_id,
       email,
-      password,
       first_name,
       last_name,
       phone,
