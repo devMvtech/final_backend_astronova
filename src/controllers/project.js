@@ -1,88 +1,87 @@
-// const db = require("../db");
 const db = require("../../database.js");
 const fs = require("fs");
 
-// Create Tinkering Lab Project
-exports.createTinkeringLabProject = async (req, res) => {
+// Create Project
+exports.createProject = async (req, res) => {
   const {
-    admin_id,
-    name,
-    description,
+    cover_img,
+    title,
+    subtitle,
     short_description,
-    team_members,
-    images,
-    featured_image_url,
-    mentor,
-    priority,
+    long_description,
+    product_img,
     status,
+    admin_id,
+    team_members,
   } = req.body;
 
   try {
-    // Check if the project name already exists
-    const nameExists = await db.query(
-      "SELECT * FROM TinkeringLabProjects WHERE name = $1",
-      [name]
-    );
+    // Start a transaction
+    await db.query("BEGIN");
 
-    if (nameExists.rows.length > 0) {
-      return res.status(400).json({
-        error: "Project with the provided name already exists.",
-      });
-    }
-
-    // Separate file upload logic from project creation
-    await db.query(
-      `INSERT INTO TinkeringLabProjects (admin_id, name, description, short_description, team_members, images, featured_image_url, mentor, priority, status) 
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+    // Insert project details
+    const projectResult = await db.query(
+      "INSERT INTO projects (cover_img, title, subtitle, short_description, long_description, product_img, status, admin_id, team_members) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *",
       [
-        admin_id,
-        name,
-        description,
+        cover_img,
+        title,
+        subtitle,
         short_description,
-        team_members,
-        images,
-        featured_image_url,
-        mentor,
-        priority,
+        long_description,
+        product_img,
         status,
+        admin_id,
+        team_members,
       ]
     );
 
-    return res.status(201).json({
-      success: true,
-      message: "The Tinkering Lab Project registration was successful",
-    });
+    const projectId = projectResult.rows[0].id;
+
+    // Insert team members associated with the project into the junction table
+    if (team_members && team_members.length > 0) {
+      const insertTeamMembersQuery =
+        "INSERT INTO project_team_members (project_id, member_id) VALUES ($1, $2)";
+
+      for (const teamMemberId of team_members) {
+        await db.query(insertTeamMembersQuery, [projectId, teamMemberId]);
+      }
+    }
+
+    // Commit the transaction
+    await db.query("COMMIT");
+
+    return res
+      .status(201)
+      .json({ success: true, project: projectResult.rows[0] });
   } catch (error) {
-    // Handle errors, log them, and possibly delete the uploaded files
-    console.log(error.message);
-    return res.status(500).json({
-      error: error.message,
-    });
+    // Rollback the transaction in case of an error
+    await db.query("ROLLBACK");
+    console.error(error.message);
+    return res.status(500).json({ error: error.message });
   }
 };
 
-// Update Tinkering Lab Project
-exports.updateTinkeringLabProject = async (req, res) => {
+// Update Project
+exports.updateProject = async (req, res) => {
   const projectId = req.params.id; // Assuming you have a route parameter for the project ID
 
   // Extract the fields you want to update from the request body
   const {
-    admin_id,
-    name,
-    description,
+    cover_img,
+    title,
+    subtitle,
     short_description,
+    long_description,
     team_members,
-    images,
-    featured_image_url,
-    mentor,
-    priority,
+    product_img,
     status,
+    admin_id,
   } = req.body;
 
   try {
     // Check if the project with the given ID exists
     const existingProject = await db.query(
-      "SELECT * FROM TinkeringLabProjects WHERE project_id = $1",
+      "SELECT * FROM project WHERE id = $1",
       [projectId]
     );
 
@@ -94,36 +93,34 @@ exports.updateTinkeringLabProject = async (req, res) => {
 
     // Update the project in the database
     await db.query(
-      `UPDATE TinkeringLabProjects 
-       SET admin_id = $1,
-           name = $2,
-           description = $3,
+      `UPDATE project 
+       SET cover_img = $1,
+           title = $2,
+           subtitle = $3,
            short_description = $4,
-           team_members = $5,
-           images = $6,
-           featured_image_url = $7,
-           mentor = $8,
-           priority = $9,
-           status = $10
-       WHERE project_id = $11`,
+           long_description = $5,
+           team_members = $6,
+           product_img = $7,
+           status = $8,
+           admin_id = $9
+       WHERE id = $10`,
       [
-        admin_id,
-        name,
-        description,
+        cover_img,
+        title,
+        subtitle,
         short_description,
-        team_members,
-        images,
-        featured_image_url,
-        mentor,
-        priority,
+        long_description,
+        JSON.stringify(team_members), // Convert the array of objects to JSON
+        product_img,
         status,
+        admin_id,
         projectId,
       ]
     );
 
     return res.status(200).json({
       success: true,
-      message: "Tinkering Lab Project updated successfully.",
+      message: "Project updated successfully.",
     });
   } catch (error) {
     console.log(error.message);
@@ -134,44 +131,45 @@ exports.updateTinkeringLabProject = async (req, res) => {
   }
 };
 
-// Get All Tinkering Lab Projects
-exports.getAllTinkeringLabProjects = async (req, res) => {
+// ... (Other functions remain unchanged)
+exports.getAllProjects = async (req, res) => {
   try {
-    const { rows } = await db.query("SELECT * FROM TinkeringLabProjects");
+    const projects = await db.query(
+      "SELECT id, title, team_members FROM projects"
+    );
 
-    return res.status(200).json({
-      success: true,
-      tinkeringLabProjects: rows,
-    });
+    // Parse the JSONB array in each project
+    const projectsWithParsedTeamMembers = projects.rows.map((project) => ({
+      id: project.id,
+      title: project.title,
+      team_members: JSON.parse(project.team_members),
+    }));
+
+    return res
+      .status(200)
+      .json({ success: true, projects: projectsWithParsedTeamMembers });
   } catch (error) {
-    console.log(error.message);
-    return res.status(500).json({
-      error: error.message,
-    });
+    console.error(error.message);
+    return res.status(500).json({ error: error.message });
   }
 };
 
-// Get Tinkering Lab Project by id
-exports.getTinkeringLabProject = async (req, res) => {
+// Get Project by ID
+exports.getProjectById = async (req, res) => {
   try {
     const { id } = req.params;
-    const project = await db.query(
-      "SELECT * FROM TinkeringLabProjects WHERE project_id = $1",
-      [id]
-    );
+    const project = await db.query("SELECT * FROM project WHERE id = $1", [id]);
     res.json(project.rows[0]);
   } catch (err) {
     console.log(err.message);
   }
 };
 
-// Delete Tinkering Lab Project by id
-exports.deleteTinkeringLabProject = async (req, res) => {
+// Delete Project by ID
+exports.deleteProjectById = async (req, res) => {
   try {
     const { id } = req.params;
-    await db.query("DELETE FROM TinkeringLabProjects WHERE project_id = $1", [
-      id,
-    ]);
+    await db.query("DELETE FROM project WHERE id = $1", [id]);
     res.json("Deleted Successfully !!");
   } catch (err) {
     console.log(err.message);

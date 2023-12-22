@@ -10,6 +10,7 @@ const {
   registerAmbassador,
   getAllUser,
   getUser,
+  updateDonor,
 } = require("../controllers/user");
 
 // Middlewares
@@ -35,6 +36,7 @@ router.post(
   validationMiddleware,
   registerDonor
 );
+router.put("/update-donor/:userId", updateDonor);
 router.post(
   "/register-coordinator",
   registerValidation,

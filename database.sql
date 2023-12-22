@@ -1,13 +1,22 @@
 
 -- Define the User table with a foreign key to Role
+
 CREATE TABLE User (
     user_id SERIAL PRIMARY KEY,
-    username VARCHAR(255) NOT NULL,
+    first_name VARCHAR(255) NOT NULL,
+    last_name VARCHAR(255) NOT NULL,  -- Added last_name
     password VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
     phone VARCHAR(20) NOT NULL,
-    address VARCHAR(20) NOT NULL,
-    role VARCHAR(50) CHECK (role IN ('Donor', 'Coordinator', 'Ambassador', 'Admin')) NOT NULL
+    address VARCHAR(255) NOT NULL,  -- Increased length for address
+    role VARCHAR(50) CHECK (role IN ('Donor', 'Coordinator', 'Ambassador', 'Admin')) NOT NULL,
+    google_id VARCHAR(255),  -- Added google_id for Google authentication
+    google_token TEXT,        -- Added google_token for Google authentication
+    insta_url VARCHAR(255),
+    postal_code VARCHAR(20),
+    state VARCHAR(255),
+    country VARCHAR(255),
+    twitter_url VARCHAR(255)
 );
 
 
@@ -137,3 +146,30 @@ CREATE TABLE testimonials(
 );
 
 -- You can add any additional constraints or indexes as needed.
+-- Define a composite type for team member
+CREATE TYPE team_member_type AS (
+    name VARCHAR(100),
+    profile_img VARCHAR(255),
+    position VARCHAR(100)
+);
+
+-- Create the project table
+CREATE TABLE projects (
+    id SERIAL PRIMARY KEY,
+    cover_img VARCHAR(255) NOT NULL,
+    title VARCHAR(100) NOT NULL,
+    subtitle VARCHAR(255),
+    short_description TEXT,
+    long_description TEXT,
+    team_members JSONB[],
+    product_img VARCHAR[],
+    status VARCHAR(255) CHECK (status IN ('approved', 'pending', 'rejected')),
+    admin_id INT REFERENCES "User"(user_id)
+);
+
+CREATE TABLE members (
+    member_id SERIAL PRIMARY KEY,
+    profile_img VARCHAR(255),
+    name VARCHAR(100) NOT NULL,
+    position VARCHAR(100) NOT NULL
+);

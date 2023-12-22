@@ -6,7 +6,8 @@ const db = require("../../database.js");
 exports.ambassador_register = async (req, res) => {
   const {
     email,
-    full_name,
+    first_name,
+    last_name,
     phone,
     date_of_birth,
     country,
@@ -51,10 +52,11 @@ exports.ambassador_register = async (req, res) => {
     const resume = req.files["resume"][0].path; // Access the resume file
     const self_intro_video = req.files["self_intro_video"][0].path; // Access the aself_intro_video files
     await db.query(
-      `insert into ambassadorRequest (email,  full_name, phone, dob, country, nationality, description, resume, self_intro_video, ambassador_type) values ($1 , $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+      `insert into ambassadorRequest (email,  first_name, last_name, phone, dob, country, nationality, description, resume, self_intro_video, ambassador_type) values ($1 , $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
       [
         email,
-        full_name,
+        first_name,
+        last_name,
         phone,
         date_of_birth,
         country,
