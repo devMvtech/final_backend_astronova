@@ -14,7 +14,10 @@ exports.ambassador_register = async (req, res) => {
     nationality,
     description,
     ambassador_type,
+    resume,
+    self_intro_video,
   } = req.body;
+  const status = "Pending";
 
   try {
     // Check if the email already exists in the "User" table
@@ -40,19 +43,8 @@ exports.ambassador_register = async (req, res) => {
       });
     }
 
-    console.log(req.files);
-
-    // Access uploaded files details through req.files
-    if (!req.files || !req.files["resume"] || !req.files["self_intro_video"]) {
-      return res
-        .status(400)
-        .send("Please provide both resume and self_intro_video.");
-    }
-
-    const resume = req.files["resume"][0].path; // Access the resume file
-    const self_intro_video = req.files["self_intro_video"][0].path; // Access the aself_intro_video files
     await db.query(
-      `insert into ambassadorRequest (email,  first_name, last_name, phone, dob, country, nationality, description, resume, self_intro_video, ambassador_type) values ($1 , $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+      `insert into ambassadorRequest (email, first_name, last_name, phone, dob, country, nationality, description, resume, self_intro_video, ambassador_type, status) values ($1 , $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
       [
         email,
         first_name,
@@ -65,6 +57,7 @@ exports.ambassador_register = async (req, res) => {
         resume,
         self_intro_video,
         ambassador_type,
+        status,
       ]
     );
 
@@ -84,9 +77,7 @@ exports.ambassador_register = async (req, res) => {
 
 exports.getallEmbassador = async (req, res) => {
   try {
-    const { rows } = await db.query(
-      "select embassador_id, full_name, email, phone, date_of_birth, country, nationality, description, resume, resume, self_intro_video, embassador_type from embassadors"
-    );
+    const { rows } = await db.query("select * from ambassadorRequest");
 
     return res.status(200).json({
       success: true,
@@ -106,7 +97,7 @@ exports.getEmbassador = async (req, res) => {
   try {
     const { id } = req.params;
     const embassador = await db.query(
-      "SELECT * FROM embassadors WHERE embassador_id = $1",
+      "SELECT * FROM ambassadorRequest WHERE Request_id = $1",
       [id]
     );
     res.json(embassador.rows[0]);

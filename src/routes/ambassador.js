@@ -32,17 +32,10 @@ const upload = multer({ storage: storage });
 // Route
 const router = Router();
 
-router.post(
-  "/registeration_form",
-  upload.fields([
-    { name: "resume", maxCount: 1 }, // For a single avatar image
-    { name: "self_intro_video", maxCount: 1 }, // For up to 1 documents
-  ]),
-  ambassador_register
-);
+router.post("/ambassador-registeration_form", ambassador_register);
 
-router.get("/all-embassadors", getallEmbassador);
+router.get("/all-ambassadors", getallEmbassador);
 router.get("/:id", getEmbassador);
-router.delete("/delete-embassador/:id", deleteEmbassador);
+router.delete("/delete-ambassador/:id", deleteEmbassador);
 
 module.exports = router;
