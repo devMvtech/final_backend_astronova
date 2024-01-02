@@ -159,6 +159,7 @@ CREATE TABLE projects (
     cover_img VARCHAR(255) NOT NULL,
     title VARCHAR(100) NOT NULL,
     subtitle VARCHAR(255),
+    video VARCHAR(255),
     short_description TEXT,
     long_description TEXT,
     team_members JSONB[],

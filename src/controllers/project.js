@@ -17,6 +17,7 @@ exports.createProject = async (req, res) => {
     admin_id,
     member_count,
     membersData,
+    video,
   } = req.body;
 
   try {
@@ -34,7 +35,7 @@ exports.createProject = async (req, res) => {
 
     // Separate file upload logic from project creation
     const projectResult = await db.query(
-      `INSERT INTO projects (cover_img, title, subtitle, short_description, long_description, product_img, status, admin_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id`,
+      `INSERT INTO projects (cover_img, title, subtitle, short_description, long_description, product_img, status, admin_id, video) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id`,
       [
         cover_img,
         title,
@@ -44,6 +45,7 @@ exports.createProject = async (req, res) => {
         product_img,
         status,
         admin_id,
+        video,
       ]
     );
 
@@ -79,6 +81,7 @@ exports.createProject = async (req, res) => {
         product_img,
         status,
         admin_id,
+        video,
       },
       members: createdMembers,
     });
