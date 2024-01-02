@@ -96,24 +96,15 @@ exports.updateProject = async (req, res) => {
   const projectId = req.params.id; // Assuming you have a route parameter for the project ID
 
   // Extract the fields you want to update from the request body
-  const {
-    cover_img,
-    title,
-    subtitle,
-    short_description,
-    long_description,
-    team_members,
-    product_img,
-    status,
-    admin_id,
-  } = req.body;
+  const { status, admin_id } = req.body;
 
   try {
     // Check if the project with the given ID exists
     const existingProject = await db.query(
-      "SELECT * FROM project WHERE id = $1",
+      "SELECT * FROM projects WHERE id = $1",
       [projectId]
     );
+    // console.log(existingProject);
 
     if (existingProject.rows.length === 0) {
       return res.status(404).json({
@@ -123,29 +114,11 @@ exports.updateProject = async (req, res) => {
 
     // Update the project in the database
     await db.query(
-      `UPDATE project 
-       SET cover_img = $1,
-           title = $2,
-           subtitle = $3,
-           short_description = $4,
-           long_description = $5,
-           team_members = $6,
-           product_img = $7,
-           status = $8,
-           admin_id = $9
-       WHERE id = $10`,
-      [
-        cover_img,
-        title,
-        subtitle,
-        short_description,
-        long_description,
-        JSON.stringify(team_members), // Convert the array of objects to JSON
-        product_img,
-        status,
-        admin_id,
-        projectId,
-      ]
+      `UPDATE projects 
+       SET status = $1,
+           admin_id = $2
+       WHERE id = $3`,
+      [status, admin_id, projectId]
     );
 
     return res.status(200).json({

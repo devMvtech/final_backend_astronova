@@ -1,10 +1,6 @@
 const { Router } = require("express");
 const {
   createProject,
-  updateTinkeringLabProject,
-  getAllTinkeringLabProjects,
-  getTinkeringLabProject,
-  deleteTinkeringLabProject,
   updateProject,
   getAllProjects,
   getProjectById,

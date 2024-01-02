@@ -163,7 +163,7 @@ CREATE TABLE projects (
     long_description TEXT,
     team_members JSONB[],
     product_img VARCHAR[],
-    status VARCHAR(255) CHECK (status IN ('approved', 'pending', 'rejected')),
+    status VARCHAR(255) CHECK (status IN ('approved', 'pending', 'rejected', 'ongoing')),
     admin_id INT REFERENCES "User"(user_id)
 );
 
